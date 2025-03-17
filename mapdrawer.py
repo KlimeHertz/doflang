@@ -64,10 +64,6 @@ class combatScene(QGraphicsScene):
                     if cell.CellID == count:
                         if cell.isActive and not cell.isSun and not cell.isInteractive:
                             cellcolor = (255,0,0)
-                        elif cell.isSun:                            
-                            cellcolor = (255,255,0)
-                        elif cell.isInteractive:
-                            cellcolor = (0,255,0)
                         else:                          
                             cellcolor = self.defaultColor
                 
