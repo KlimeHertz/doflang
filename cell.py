@@ -14,6 +14,7 @@ class Cell:
         self.color = 'black'
         self.CellID = CellID
         cd =  unhash_cell(raw_data)
+        self.cd = cd
         if cd[2] == 0 or cd[0]==1 or cd[0] == 33 and cd[2]==1:
             self.isActive = False 
         else:
@@ -32,7 +33,7 @@ class Cell:
         self.set_default_color()
     
     def print_cell(self):
-        print(f"CellID : {self.CellID} isActive : {self.isActive} isInteractive : {self.isInteractive} lineOfSight : {self.lineOfSight} layerGroundRot : {self.layerGroundRot} groundLevel : {self.groundLevel} movement : {self.movement} layerGroundNum : {self.layerGroundNum} layerObject1Num : {self.layerObject1Num} layerObject2Num : {self.layerObject2Num} isSun : {self.isSun}")
+        print(f"CellID : cell cd {self.cd} {self.CellID} isActive : {self.isActive} isInteractive : {self.isInteractive} lineOfSight : {self.lineOfSight} layerGroundRot : {self.layerGroundRot} groundLevel : {self.groundLevel} movement : {self.movement} layerGroundNum : {self.layerGroundNum} layerObject1Num : {self.layerObject1Num} layerObject2Num : {self.layerObject2Num} isSun : {self.isSun}")
         
     def getAdjacentCells(self):
         return [self.CellID - 1, self.CellID + 1, self.CellID - 14, self.CellID + 14, self.CellID - 15, self.CellID + 15]

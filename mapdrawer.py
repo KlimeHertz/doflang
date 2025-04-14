@@ -2,11 +2,13 @@ from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPolygonItem, QGraphicsTextI
 from PyQt5.QtGui import QPolygonF, QColor, QFont, QPen
 from PyQt5.QtCore import QPointF, pyqtSlot, QObject, pyqtSignal
 from entity import Entity
-
+from PyQt5.QtWidgets import QGraphicsTextItem
+from helper import ressourceStatus
+import globalstore
 
 class mapTile(QGraphicsPolygonItem):
     
-    def __init__(self, x, y ,color, tileid):
+    def __init__(self, x, y ,color : tuple, tileid):
         super().__init__()
         self.tileid = tileid
         self.cellsize = 50
@@ -41,8 +43,68 @@ class combatScene(QGraphicsScene):
         for item in self.items():
             self.removeItem(item)
             
+    def drawCombatScene(self, fromScene):
+        self.clearScene()
+        self._copyItemsFromScene(fromScene)
+        
+    @pyqtSlot(int)
+    def rollbackTileColor(self, tileid):
+        tile = self.getTileByid(tileid)
+        if tile:
+            tile.setBrush(QColor(*tile.originalColor))
+            
+    def _duplicateItem(self, item):
+        # Duplicate known item types. For custom items like mapTile,
+        # we re-instantiate with similar properties.
+        if isinstance(item, mapTile):
+            # Use the center of the polygon's bounding rectangle as reference point.
+            center = item.polygon().boundingRect().center()
+            if item.brush().color() != QColor(255,0,0) and item.brush().color() != QColor(*self.defaultColor):
+                cellcolor = (255,0,0)
+            else:
+                cellcolor = (item.brush().color().red(), item.brush().color().green(), item.brush().color().blue())
+            
+            new_item = mapTile(center.x(), center.y(),
+                               cellcolor,
+                               item.tileid)
+            
+            # Duplicate the text item
+            new_item.textItem.setHtml(item.textItem.toHtml())
+            new_item.textItem.setFont(item.textItem.font())
+            new_item.textItem.setDefaultTextColor(item.textItem.defaultTextColor())
+            new_item.textItem.setPos(item.textItem.pos())
+            return new_item
+        elif isinstance(item, QGraphicsTextItem):
+            new_text = QGraphicsTextItem(item.toPlainText())
+            new_text.setFont(item.font())
+            new_text.setDefaultTextColor(item.defaultTextColor())
+            new_text.setPos(item.pos())
+            return new_text
+        # Add duplication logic for other QGraphicsItem types as needed.
+        return None
+
+    def _copyItemsFromScene(self, other_scene):
+        for item in other_scene.items():
+            copy = self._duplicateItem(item)
+            if copy:
+                self.addItem(copy)
     
-    def drawCombatScene(self, mapdata):
+    @pyqtSlot(int,tuple)
+    def updateTileColor(self, tileid, color):
+        print(f"change tile color {tileid} {color}")
+        tile = self.getTileByid(tileid)
+        if tile:
+            tile.setBrush(QColor(*color))
+            
+    def getTileByid(self, tileid):
+        for item in self.items():
+            if isinstance(item, mapTile):
+                if item.tileid == tileid:
+                    return item
+        return None
+            
+    
+    def drawCombatSceneFromDict(self, mapdata):
         self.clearScene()
         
         count  = 0
@@ -103,10 +165,11 @@ class mapScene(QGraphicsScene):
     def drawMap(self, mapdata):
         self.clearScene()
         
+        for cell in mapdata['cells']:
+            print(f"cell all data {cell.CellID} {cell.layerGroundNum} {cell.layerObject1Num} {cell.layerObject2Num}")                    
         count  = 0
         for i in range(0,mapdata['height']):                
             for j in range(0,mapdata['width']):
-                
                 if i % 2 != 0 and j == mapdata['width'] - 1:
                     continue
                 
@@ -118,21 +181,24 @@ class mapScene(QGraphicsScene):
                 x = 50 + (j * self.cellsize) + x_offset
                 y = 50 + (i * self.cellsize/2)
                 
-                for cell in mapdata['cells']:
+                for cell in mapdata['cells']:                    
                     if cell.CellID == count:
                         if cell.isActive and not cell.isSun and not cell.isInteractive:
                             cellcolor = (255,0,0)
-                        elif cell.isSun:                            
+                        elif cell.isSun:
+                            globalstore.store.updateChangeMapTiles(cell.CellID)                            
                             cellcolor = (255,255,0)
                         elif cell.isInteractive:
                             cellcolor = (0,255,0)
+                            if cell.layerObject2Num in globalstore.store.dictPaysant.values():
+                                globalstore.store.updateHarvestTiles({cell.CellID: ressourceStatus.SPAWNED})
                         else:                          
                             cellcolor = self.defaultColor
                 
                 tile = mapTile(x, y, cellcolor, count)
                 self.addItem(tile)
                 self.addItem(tile.textItem)
-                count += 1
+                count += 1        
         
     def getTileByid(self, tileid):
         for item in self.items():
@@ -167,13 +233,13 @@ class mapManager(QObject):
             return (255,0,0)
         
     def changeTileColorForHarvets(self, event, tileid):
-        if event == "spawn":
+        if event == ressourceStatus.SPAWNED:
             self.changeTileColor.emit(tileid, (0,255,0))
-        elif event == "notpresent":
+        elif event == ressourceStatus.NOTSPWANED:
             self.changeTileColor.emit(tileid, (0, 80, 24))
-        elif event == "harvesting":
+        elif event == ressourceStatus.HARVESTING:
             self.changeTileColor.emit(tileid, (0, 239, 197))
-        elif event == "harvested":
+        elif event == ressourceStatus.ENDHARVEST:
             self.changeTileColor.emit(tileid, (0, 80, 24))
         
     def addEntity(self,id, entity : Entity):

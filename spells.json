@@ -1,0 +1,691 @@
+{
+  "NAME_classe": "Sadida",
+  "sorts": [
+    {
+        "ID": 1,
+        "NAME": "Poison Paralysant",
+        "LEVEL": 1,
+        "DESCR": "Applique un poison qui inflige des dommages Terre à chaque action de la cible.",
+        "PO": {
+            "1" : [1,2],
+            "2" : [1,3],
+            "3" : [1,4],
+            "4" : [1,6],
+            "5" : [1,7],
+            "6" : [1,8]
+        },
+        "POMOD": true,
+        "LineOfView": true,
+        "ZONE": 1,
+        "CASTPERTURN": 1,
+        "CASTPERTARGET": 1,
+        "SPELLDONWNDURATION": {
+            "1" : 6,
+            "2" : 5,
+            "3" : 4,
+            "4" : 3,
+            "5" : 2,
+            "6" : 2
+        },
+        "PA": {
+            "1" : 3,
+            "2" : 3,
+            "3" : 3,
+            "4" : 3,
+            "5" : 3,
+            "6" : 3
+        },
+        "CC": "1/50",
+        "EC": "1/100",
+        "EFFECT": [
+          {
+            "TYPE": "PDV/1PA",
+            "DELAYED": true,
+            "DELAYEDTURN": 1,
+            "EFFECTDURATION": {
+              "1" : 3,
+              "2" : 3,
+              "3" : 3,
+              "4" : 3,
+              "5" : 3,
+              "6" : 3
+            },    
+            "DMG": {
+              "1" : [1,1],
+              "2" : [1,1],
+              "3" : [1,1],
+              "4" : [1,1],
+              "5" : [1,1],
+              "6" : [2,2]
+            }    
+          }
+        ],
+        "Condition": "Aucune"
+    },
+
+    {
+        "ID": 2,
+        "NAME": "La Bloqueuse",
+        "LEVEL": 1,
+        "DESCR": "Invoque une poupée Bloqueuse avec beaucoup de points de vie, idéale pour immobiliser les ennemis.",
+        "PO": {
+            "1" : [1,1],
+            "2" : [1,1],
+            "3" : [1,1],
+            "4" : [1,1],
+            "5" : [1,1],
+            "6" : [1,1]
+        },
+        "POMOD": false,
+        "LineOfView": false,
+        "ZONE": 1,
+        "CASTPERTURN": 1,
+        "CASTPERTARGET": 0,
+        "SPELLDONWNDURATION": {
+            "1" : 6,
+            "2" : 5,
+            "3" : 4,
+            "4" : 3,
+            "5" : 2,
+            "6" : 1
+        },
+        "PA": {
+            "1" : 6,
+            "2" : 5,
+            "3" : 5,
+            "4" : 4,
+            "5" : 3,
+            "6" : 3
+        },
+        "CC": "Aucun",
+        "EC": "1/50",
+        "EFFECT": [
+            {
+                "TYPE": "INVOC",
+                "DELAYED": false,
+                "DELAYEDTURN": 0,
+                "EFFECTDURATION": {
+                  "1" : 0,
+                  "2" : 0,
+                  "3" : 0,
+                  "4" : 0,
+                  "5" : 0,
+                  "6" : 0
+                },    
+                "DMG": {
+                  "1" : [0,0],
+                  "2" : [0,0],
+                  "3" : [0,0],
+                  "4" : [0,0],
+                  "5" : [0,0],
+                  "6" : [0,0]
+                }    
+            }
+        ],
+        "Condition": "Aucune"
+    },
+
+    {
+      "ID": 2,
+      "NAME": "Ronce",
+      "LEVEL": 1,
+      "DESCR": "Inflige des dommages Terre à distance.",
+      "PO": {
+        "1" : [1,6],
+        "2" : [1,6],
+        "3" : [1,7],
+        "4" : [1,7],
+        "5" : [1,8],
+        "6" : [1,8]
+      },
+      "POMOD": true,
+      "LineOfView": true,
+      "ZONE": 1,
+      "CASTPERTURN": 100,
+      "CASTPERTARGET": 2,
+      "SPELLDONWNDURATION": {
+        "1" : 0,
+        "2" : 0,
+        "3" : 0,
+        "4" : 0,
+        "5" : 0,
+        "6" : 0
+      },
+      "PA": {
+        "1" : 5,
+        "2" : 5,
+        "3" : 5,
+        "4" : 5,
+        "5" : 4,
+        "6" : 3
+      },
+      "CC": "1/35",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "DMG/TERRE",
+          "DELAYED": false,
+            "DELAYEDTURN": 0,
+            "EFFECTDURATION": {
+              "1" : 0,
+              "2" : 0,
+              "3" : 0,
+              "4" : 0,
+              "5" : 0,
+              "6" : 0
+            },
+          "DMG": {
+            "1" : [4,6],
+            "2" : [6,8],
+            "3" : [6,10],
+            "4" : [9,13],
+            "5" : [10,17],
+            "6" : [11,18]
+          }
+        }
+      ],
+      "Condition": "Aucune"
+    },
+
+    {
+        "ID": 4,
+        "NAME": "Sacrifice Poupesque",
+        "LEVEL": 3,
+        "DESCR": "Transfère les dommages subis par le lanceur à ses poupées invoquées.",
+        "PO": {
+        "1" : [1,1],
+        "2" : [1,1],
+        "3" : [1,1],
+        "4" : [1,1],
+        "5" : [1,1],
+        "6" : [1,1]
+      },
+
+      "POMOD": false,
+      "LineOfView": true,
+      "ZONE": 1,
+      "CASTPERTURN": 1,
+      "CASTPERTARGET": 1,
+      "SPELLDONWNDURATION": {
+        "1" : 0,
+        "2" : 0,
+        "3" : 0,
+        "4" : 0,
+        "5" : 0,
+        "6" : 0
+      },
+      "PA": {
+        "1" : 6,
+        "2" : 6,
+        "3" : 6,
+        "4" : 5,
+        "5" : 4,
+        "6" : 2
+      },
+      "CC": "1/35",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "VOL/AIR",
+          "DELAYED": false,
+            "DELAYEDTURN": 0,
+            "EFFECTDURATION": {
+              "1" : 0,
+              "2" : 0,
+              "3" : 0,
+              "4" : 0,
+              "5" : 0,
+              "6" : 0
+            },
+          "DMG": {
+            "1" : [16,20],
+            "2" : [18,22],
+            "3" : [21,25],
+            "4" : [24,28],
+            "5" : [26,30],
+            "6" : [41,45]
+          }
+        }
+      ],
+      "Condition": "Aucune"
+    },
+
+    {
+        "ID": 5,
+        "NAME": "Larme",
+        "LEVEL": 3,
+        "DESCR": "Ce sort permet d'inflliger des dommages Eau.",
+        "PO": {
+        "1" : [1,3],
+        "2" : [1,3],
+        "3" : [1,4],
+        "4" : [1,5],
+        "5" : [1,6],
+        "6" : [1,8]
+      },
+
+      "POMOD": true,
+      "LineOfView": true,
+      "ZONE": 1,
+      "CASTPERTURN": 100,
+      "CASTPERTARGET": 100,
+      "SPELLDONWNDURATION": {
+        "1" : 0,
+        "2" : 0,
+        "3" : 0,
+        "4" : 0,
+        "5" : 0,
+        "6" : 0
+      },
+      "PA": {
+        "1" : 5,
+        "2" : 5,
+        "3" : 5,
+        "4" : 5,
+        "5" : 4,
+        "6" : 4
+      },
+      "CC": "1/35",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "DMG/EAU",
+          "DELAYED": false,
+            "DELAYEDTURN": 0,
+            "EFFECTDURATION": {
+              "1" : 0,
+              "2" : 0,
+              "3" : 0,
+              "4" : 0,
+              "5" : 0,
+              "6" : 0
+            },
+          "DMG": {
+            "1" : [11,15],
+            "2" : [11,17],
+            "3" : [11,19],
+            "4" : [11,21],
+            "5" : [14,24],
+            "6" : [17,27]
+          }
+        }
+      ],
+      "Condition": "Aucune"
+    },
+
+    {
+      "ID": 2,
+      "NAME": "La Folle",
+      "LEVEL": 9,
+      "DESCR": "Invoque une poupée Folle qui retire de la portée et des PM aux ennemis.",
+      "PO": {
+        "1" : [1,1],
+        "2" : [1,1],
+        "3" : [1,1],
+        "4" : [1,1],
+        "5" : [1,1],
+        "6" : [1,1]
+      },
+      "POMOD": false,
+      "LineOfView": false,
+      "ZONE": 1,
+      "CASTPERTURN": 1,
+      "CASTPERTARGET": 1,
+      "SPELLDONWNDURATION": {
+        "1" : 6,
+        "2" : 5,
+        "3" : 4,
+        "4" : 3,
+        "5" : 2,
+        "6" : 1
+      },
+      "PA": {
+        "1" : 6,
+        "2" : 5,
+        "3" : 5,
+        "4" : 4,
+        "5" : 3,
+        "6" : 3
+      },
+      "DLRECAST": 8,
+      "CC": "Aucun",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+            "TYPE": "Invocation",
+            "DMG": {
+              "1" : [0,0],
+              "2" : [0,0],
+              "3" : [0,0],
+              "4" : [0,0],
+              "5" : [0,0],
+              "6" : [0,0]
+            }
+        }
+      ],
+      "Condition": "Aucune"
+    },
+
+    {
+      "ID": 3,
+      "NAME": "Ronce Apaisante",
+      "LEVEL": 13,
+      "DESCR": "La Ronce Apaisante permet de ralentir un ennemi mais lui rend des PDV.",
+      "PO": {
+        "1" : [1,4],
+        "2" : [1,5],
+        "3" : [1,6],
+        "4" : [1,7],
+        "5" : [1,8],
+        "6" : [1,8]
+      },
+      "POMOD": true,
+      "LineOfView": true,
+      "ZONE": 1,
+      "CASTPERTURN": 1,
+      "CASTPERTARGET": 1,
+      "SPELLDONWNDURATION": {
+        "1" : 5,
+        "2" : 5,
+        "3" : 5,
+        "4" : 5,
+        "5" : 4,
+        "6" : 4
+      },
+      "PA": {
+        "1" : 2,
+        "2" : 2,
+        "3" : 2,
+        "4" : 2,
+        "5" : 2,
+        "6" : 2
+      },
+      "DLRECAST": 8,
+      "CC": "1/50",
+      "EC": "1/100",
+      "EFFECT": [
+        {
+            "TYPE": "Invocation",
+            "DMG": {
+              "1" : [0,0],
+              "2" : [0,0],
+              "3" : [0,0],
+              "4" : [0,0],
+              "5" : [0,0],
+              "6" : [0,0]
+            }
+        }
+      ],
+      "Condition": "Aucune"
+    },
+
+    {
+      "ID": 5,
+      "NAME": "La Gonflable",
+      "LEVEL": 13,
+      "DESCR": "Invoque une poupée Gonflable qui soigne et augmente les PM des alliés à proximité.",
+      "PO": "1-3",
+      "POMOD": false,
+      "LineOfView": false,
+      "ZONE": "Invocation",
+      "CASTPERTURN": 1,
+      "PA": 4,
+      "DL": 8,
+      "CC": "Aucun",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "Invocation",
+          "valeurs": "Invoque une Poupée Gonflable"
+        }
+      ],
+      "Condition": "Aucune"
+    },
+    {
+      "ID": 6,
+      "NAME": "Ronce Multiple",
+      "LEVEL": 17,
+      "DESCR": "Attaque plusieurs cibles en ligne en infligeant des dommages Terre.",
+      "PO": "2-5",
+      "POMOD": true,
+      "LineOfView": true,
+      "ZONE": "Ligne (jusqu’à 3 cibles)",
+      "CASTPERTURN": 2,
+      "PA": 4,
+      "DL": "Aucun",
+      "CC": "1/45",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "Dommages Terre",
+          "valeurs": "4 à 8 par cible (selon le niveau du sort)"
+        }
+      ],
+      "Condition": "Aucune"
+    },
+    {
+      "ID": 7,
+      "NAME": "Herbe Folle",
+      "LEVEL": 21,
+      "DESCR": "Réduit la volonté d’attaque de la cible et peut retirer des PM.",
+      "PO": "1-4",
+      "POMOD": true,
+      "LineOfView": true,
+      "ZONE": "Cible unique",
+      "CASTPERTURN": 2,
+      "PA": 3,
+      "DL": "Aucun",
+      "CC": "1/45",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "Retrait de PM",
+          "valeurs": "1 à 2 PM (selon le niveau du sort)"
+        }
+      ],
+      "Condition": "Aucune"
+    },
+    {
+      "ID": 8,
+      "NAME": "Feu de Brousse",
+      "LEVEL": 26,
+      "DESCR": "Attaque en zone, infligeant des dommages Feu.",
+      "PO": "2-5",
+      "POMOD": true,
+      "LineOfView": true,
+      "ZONE": "Cercle de taille 2",
+      "CASTPERTURN": 2,
+      "PA": 4,
+      "DL": "Aucun",
+      "CC": "1/50",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "Dommages Feu",
+          "valeurs": "10 à 16 (selon le niveau du sort)"
+        }
+      ],
+      "Condition": "Aucune"
+    },
+    {
+      "ID": 9,
+      "NAME": "Sacrifice Poupesque",
+      "LEVEL": 31,
+      "DESCR": "Transfère les dommages subis par le lanceur à ses poupées invoquées.",
+      "PO": "0",
+      "POMOD": false,
+      "LineOfView": false,
+      "ZONE": "Sur le lanceur",
+      "CASTPERTURN": 1,
+      "PA": 2,
+      "DL": 5,
+      "CC": "Aucun",
+      "EC": "1/100",
+      "EFFECT": [
+        {
+          "TYPE": "Transfert de dommages",
+          "valeurs": "Une partie des dommages subis est redirigée vers les poupées"
+        }
+      ],
+      "Condition": "Aucune"
+    },
+    {
+      "ID": 10,
+      "NAME": "Connaissance des Poupées",
+      "LEVEL": 36,
+      "DESCR": "Augmente la vitalité et les EFFECT des poupées invoquées.",
+      "PO": "0",
+      "POMOD": false,
+      "LineOfView": false,
+      "ZONE": "Sur le lanceur",
+      "CASTPERTURN": "Illimité",
+      "PA": 2,
+      "DL": 4,
+      "CC": "Aucun",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "Buff sur poupées",
+          "valeurs": "+X% Vitalité, +X% EFFECT selon le niveau du sort"
+        }
+      ],
+      "Condition": "Aucune"
+    },
+    {
+      "ID": 11,
+      "NAME": "La Surpuissante",
+      "LEVEL": 42,
+      "DESCR": "Invoque une poupée Surpuissante qui pose des pièges de retrait de PM.",
+      "PO": "1-3",
+      "POMOD": false,
+      "LineOfView": false,
+      "ZONE": "Invocation",
+      "CASTPERTURN": 1,
+      "PA": 5,
+      "DL": 10,
+      "CC": "Aucun",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "Invocation",
+          "valeurs": "Invoque une Poupée Surpuissante"
+        }
+      ],
+      "Condition": "Aucune"
+    },
+    {
+      "ID": 12,
+      "NAME": "Ronce Insolente",
+      "LEVEL": 48,
+      "DESCR": "Désenvoûte et inflige de faibles dommages Terre à la cible.",
+      "PO": "1-4",
+      "POMOD": true,
+      "LineOfView": true,
+      "ZONE": "Cible unique",
+      "CASTPERTURN": 2,
+      "PA": 3,
+      "DL": "Aucun",
+      "CC": "1/40",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "Désenvoûtement",
+          "valeurs": "Retire tous les EFFECT positifs de la cible"
+        },
+        {
+          "TYPE": "Dommages Terre",
+          "valeurs": "5 à 8"
+        }
+      ],
+      "Condition": "Aucune"
+    },
+    {
+      "ID": 13,
+      "NAME": "Arbre",
+      "LEVEL": 54,
+      "DESCR": "Fait pousser un arbre statique sur le terrain, bloquant la ligne de vue et pouvant servir à d’autres sorts Sadida.",
+      "PO": "1-3",
+      "POMOD": false,
+      "LineOfView": false,
+      "ZONE": "Invocation d’un obstacle (Arbre)",
+      "CASTPERTURN": 2,
+      "PA": 3,
+      "DL": "Aucun",
+      "CC": "Aucun",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "Invocation d’obstacle",
+          "valeurs": "Crée un Arbre bloquant la ligne de vue"
+        }
+      ],
+      "Condition": "Aucune"
+    },
+    {
+      "ID": 14,
+      "NAME": "La Sacrifiée",
+      "LEVEL": 60,
+      "DESCR": "Invoque une poupée Sacrifiée qui explose sur les ennemis, infligeant des dommages Terre.",
+      "PO": "1-3",
+      "POMOD": false,
+      "LineOfView": false,
+      "ZONE": "Invocation",
+      "CASTPERTURN": 1,
+      "PA": 4,
+      "DL": 8,
+      "CC": "Aucun",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "Invocation",
+          "valeurs": "Invoque une Poupée Sacrifiée"
+        }
+      ],
+      "Condition": "Aucune"
+    },
+    {
+      "ID": 15,
+      "NAME": "La Bloqueuse",
+      "LEVEL": 70,
+      "DESCR": "Invoque une poupée Bloqueuse avec beaucoup de points de vie, idéale pour immobiliser les ennemis.",
+      "PO": "1-3",
+      "POMOD": false,
+      "LineOfView": false,
+      "ZONE": "Invocation",
+      "CASTPERTURN": 1,
+      "PA": 5,
+      "DL": 10,
+      "CC": "Aucun",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "Invocation",
+          "valeurs": "Invoque une Poupée Bloqueuse"
+        }
+      ],
+      "Condition": "Aucune"
+    },
+    {
+      "ID": 16,
+      "NAME": "Puissance Sylvestre",
+      "LEVEL": 80,
+      "DESCR": "Transforme un Arbre ou une invocation alliée en un arbre soignant et protégeant les alliés à proximité.",
+      "PO": "1-4",
+      "POMOD": true,
+      "LineOfView": true,
+      "ZONE": "Cible unique (Arbre ou invocation)",
+      "CASTPERTURN": 1,
+      "PA": 3,
+      "DL": 5,
+      "CC": "Aucun",
+      "EC": "1/50",
+      "EFFECT": [
+        {
+          "TYPE": "Transformation",
+          "valeurs": "Transforme la cible en Arbre soigneur"
+        }
+      ],
+      "Condition": "Nécessite une invocation alliée ou un Arbre"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+startWatch 30 7;
+defineVar treeupSpawn bool False;
+defineVar treeRightSpawn bool False;
+defineVar treeDonwSpawn bool False;
+waitInSeconds 5;
+moveToCell 223;
+waitInSeconds 5;
+moveToCell 279;
+goto 1;
+moveToCell 285;

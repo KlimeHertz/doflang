@@ -1,0 +1,22 @@
+{
+    "appName": "MyApplication",
+    "version": "1.0.0",
+    "settings": {
+        "debug": false,
+        "theme": "light"
+    },
+    "dofX": 2204,
+    "dofY": -60,
+    "screenUpLeftX": 1920,
+    "screenUpLeftY": -84,
+    "secreenW": 1920,
+    "secreenH": 1080,
+    "cellheight": 48,
+    "cellwidth": 96,
+    "firstSpellX": 3269,
+    "firstSpellY": 843,
+    "deltaXh": 40,
+    "deltaYhA": 40,
+    "deltaYhB": 28,
+    "sleepTime": 0.5
+}

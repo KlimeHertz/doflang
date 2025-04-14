@@ -4,6 +4,8 @@ from scapy.all import Raw
 import socket, time
 from map import mapDecrypt
 from entity import Entity
+from helper import ressourceStatus
+import globalstore
 
 TARGET_IP = ["52.214.173.25","54.216.162.213"] 
 
@@ -12,11 +14,18 @@ class snifferWorker(QObject):
     updateMapView = pyqtSignal(dict)
     clearScene = pyqtSignal()
     entityOnCell = pyqtSignal(int,tuple)
+    combatStart = pyqtSignal()
+    combatEnd = pyqtSignal()
+    combatPositionUpdate = pyqtSignal(int,tuple)
+    addPlayerToTree = pyqtSignal(dict)
+    addMonsterToTree = pyqtSignal(dict)
+    moveToTest = pyqtSignal(int)
     
-    def __init__(self, mapManager):
+    def __init__(self, mapManager,combatManager):
         super().__init__()
         self.mapDecrypter = mapDecrypt()
         self.mapManager = mapManager
+        self.combatManager = combatManager
         
     def updateWindowFeedText(self, packet):
         if packet.haslayer("IP") and packet["IP"].src in TARGET_IP:
@@ -30,7 +39,6 @@ class snifferWorker(QObject):
                 
         
     def __parsePacket(self, packet):
-        #print(f"packet {packet[:2]}")
         #character information
         if packet[:3] == "ASK":
             info_perso = packet[3:].split("|")
@@ -54,6 +62,7 @@ class snifferWorker(QObject):
                 mapID = data[1]
                 map_date = data[2]
                 decryption_key = data[3]
+                globalstore.store.mapChangeClear()
                 dictmapdata=self.mapDecrypter.getMapData(mapID, map_date, decryption_key)
                 self.mapManager.clearAllEntities()
                 self.updateMapView.emit(dictmapdata)
@@ -69,28 +78,68 @@ class snifferWorker(QObject):
                 TramGDKSplit = tramGDK.split(";")
                 if TramGDKSplit[1] == "5":
                     self.updateTextZone.emit(f"ressource spawn on {TramGDKSplit[0]}")
-                    self.mapManager.changeTileColorForHarvets("spawn", int(TramGDKSplit[0]))
+                    self.mapManager.changeTileColorForHarvets(ressourceStatus.SPAWNED, int(TramGDKSplit[0]))                    
+                    globalstore.store.updateHarvestTiles({int(TramGDKSplit[0]): ressourceStatus.SPAWNED})
                 elif TramGDKSplit[1] == "4":
                     self.updateTextZone.emit(f"ressource absent on {TramGDKSplit[0]}")
-                    self.mapManager.changeTileColorForHarvets("notpresent", int(TramGDKSplit[0]))
+                    self.mapManager.changeTileColorForHarvets(ressourceStatus.NOTSPWANED, int(TramGDKSplit[0]))                    
+                    globalstore.store.updateHarvestTiles({int(TramGDKSplit[0]): ressourceStatus.NOTSPWANED})
                 elif TramGDKSplit[1] == "3":
                     self.updateTextZone.emit(f"end harveste on {TramGDKSplit[0]}")
-                    self.mapManager.changeTileColorForHarvets("harvested", int(TramGDKSplit[0]))
+                    self.mapManager.changeTileColorForHarvets(ressourceStatus.ENDHARVEST, int(TramGDKSplit[0]))
+                    globalstore.store.updateHarvestTiles({int(TramGDKSplit[0]): ressourceStatus.ENDHARVEST})
                 elif TramGDKSplit[1] == "2":
                     self.updateTextZone.emit(f"start harvest on {TramGDKSplit[0]}")
-                    self.mapManager.changeTileColorForHarvets("harvesting", int(TramGDKSplit[0]))
+                    self.mapManager.changeTileColorForHarvets(ressourceStatus.HARVESTING, int(TramGDKSplit[0]))
+                    globalstore.store.updateHarvestTiles({int(TramGDKSplit[0]): ressourceStatus.HARVESTING})
                     
         if packet[:2] == "GA":
             self.parseGAPacket(packet)
         elif packet[:3] == "GIC":
-            #self.combat.mouv_start_cell(packet)
-            pass
+            color = None
+            for tram in packet[4:].split("|"):
+                tramSplit = tram.split(";")
+                if self.combatManager.getEntityTypeById(int(tramSplit[0])) == "player":
+                    color = (0,0,255)
+                else:
+                    color = (0,255,0)
+
+                pos = int(tramSplit[1])
+                self.combatManager.updateEntityPosition(int(tramSplit[0]), pos) 
+                self.combatManager.rollbackOldCellColor(int(tramSplit[0]))                              
+                self.combatPositionUpdate.emit(pos,color)
         elif packet[:2] == "GE":
-            #self.character.isfighting = False
-            pass
+            self.updateTextZone.emit("\t\t>>>> combat end <<<<\t\t")
+            self.combatEnd.emit()
+            self.combatManager.combatEnd()
         elif packet[:3] == "GTM":
-            #self.combat.update_carac_entity(packet)          
-            pass
+            trams = packet[4:].split("|")                   
+            for tram in trams:
+                if len(tram) <= 4:
+                    tramSplit = tram.split(";")
+                    statsDict = {
+                    "id": int(tramSplit[0]),
+                    "pdv": 0,
+                    "pa": 0,
+                    "pm": 0,
+                    "pdvmax": 0
+                }
+                else:
+                    tramSplit = tram.split(";")
+                    statsDict = {
+                        "id": int(tramSplit[0]),
+                        "pdv": int(tramSplit[2]),
+                        "pa": int(tramSplit[3]),
+                        "pm": int(tramSplit[4]),
+                        "pdvmax": int(tramSplit[7])
+                    }
+                self.combatManager.updateEntityStats(int(tramSplit[0]), statsDict)
+                
+                if self.combatManager.getEntityTypeById(int(tramSplit[0])) == "player":
+                    self.addPlayerToTree.emit(statsDict)
+                else:
+                    self.addMonsterToTree.emit(statsDict)
+                
         elif packet[:3] == "GTS":
             data =  packet[3:].split("|")
             print("debut du tour...")
@@ -107,8 +156,20 @@ class snifferWorker(QObject):
         if action_id == 1:
             end_cell = self.getCellIdFromHash(data[3][len(data[3]) - 2:])
             self.updateTextZone.emit(f"entity {entity_id} moved to cell {end_cell}")
-            #self.entityOnCell.emit(entity_id,end_cell,(0,0,255))
-            self.mapManager.entityMovedToCell(entity_id, end_cell)
+            if self.combatManager.isInCombat():                                
+                self.combatManager.updateEntityPosition(int(entity_id), int(end_cell))
+                
+                color = None
+                if self.combatManager.getEntityTypeById(int(entity_id)) == "player":
+                    color = (0,0,255)
+                else:
+                    color = (0,255,0)
+                    
+                self.combatManager.rollbackOldCellColor(int(entity_id))                              
+                self.combatPositionUpdate.emit(int(end_cell),color)                
+                
+            else:
+                self.mapManager.entityMovedToCell(entity_id, int(end_cell))
             
         #Le personnage recolte
         elif action_id == 501:     
@@ -119,7 +180,11 @@ class snifferWorker(QObject):
             
         #combat
         elif action_id == 905:
-            self.updateTextZone.emit("combat start")
+            self.updateTextZone.emit("\t\t>>>> combat start <<<<\t\t")
+            self.combatStart.emit()
+            PlayerEntity = Entity(entity_id, 0, 0, 0, "player", False)
+            self.combatManager.combatStart()
+            self.combatManager.addPlayerEntity(PlayerEntity)
 
         #entity pousser
         elif action_id == 5:
@@ -129,6 +194,8 @@ class snifferWorker(QObject):
         elif action_id == 103:
             id_du_mort = int(data[3])
             self.updateTextZone.emit(f"mort du mob {id_du_mort}")
+            self.combatPositionUpdate.emit(self.combatManager.getEntityById(id_du_mort).currentCell, (255,0,0))
+            self.combatManager.deleteEntity(id_du_mort)            
             
     def getCellIdFromHash(self,cellCode):
         char1 = cellCode[0]
@@ -155,6 +222,7 @@ class snifferWorker(QObject):
         return (code1 + code2)
         
     def parseGMPacket(self,packet):
+        entity = None
         instances = packet[3:].split('|')
         for instance in instances:
             if len(instance) < 1:
@@ -177,15 +245,27 @@ class snifferWorker(QObject):
                 if type_ == -1:  # creature
                     pass
                 elif type_ == -2:  # mob
-                    # if not self.character_state.isFighting:
-                    #    return
+                    if not self.combatManager.isInCombat():
+                        return
                     #monster_team = infos[15] if len(infos) <= 18 else infos[22]
                     levels = list(map(int, infos[7].split(',')))
                     if len(infos) == 12:
-                        self.updateTextZone.emit(f"mob {entity_id} added to cell {cell} pa {infos[12]} vie {infos[13]} pm {infos[14]}")                        
+                        self.updateTextZone.emit(f"mob {entity_id} added to cell {cell} vie {infos[12]} pm {infos[13]} pa {infos[14]}")                        
                     else:
-                        self.updateTextZone.emit(f"mob {entity_id} added to cell {cell}")            
+                        self.updateTextZone.emit(f"mob {entity_id} added to cell {cell}")
                         
+                    entityMonster = Entity(entity_id, cell, levels, 0, "monster", False)
+                    entityMonster.withInfos(int(infos[14]), int(infos[13]), int(infos[12]), int(infos[12]), 0, {})         
+                    self.combatManager.addMonsterEntity(entityMonster)
+                    self.combatManager.rollbackOldCellColor(entity_id)
+                    self.combatPositionUpdate.emit(cell, (0,255,0))
+                
+                elif type_ == 10 and self.combatManager.isInCombat():  # personnage
+                    self.updateTextZone.emit(f"player {entity_id} added to cell {cell}")
+                    self.combatManager.entitySetStartCell(entity_id, cell)
+                    self.combatManager.rollbackOldCellColor(entity_id)
+                    self.combatPositionUpdate.emit(cell, (0,0,255))
+                    
                 elif type_ == -3:  # group of mob
                     templates = list(map(int, template.split(',')))
                     levels = list(map(int, infos[7].split(',')))
@@ -198,7 +278,8 @@ class snifferWorker(QObject):
                 elif type_ == -5:  # Merchants
                     self.updateTextZone.emit(f"merchant {entity_id} added to cell {cell}")
                     entity = Entity(entity_id, cell, 0, 0,  "merchant", False)
-                elif type_ == -6:  # resources
+                elif type_ == -6:  # resources                                      
+                    globalstore.store.updateHarvestTiles({cell: ressourceStatus.SPAWNED})
                     self.updateTextZone.emit(f"resource {entity_id} added to cell {cell}")
                     entity = Entity(entity_id, cell, 0, 0,  "resource", False)
                 else:  # players
@@ -212,6 +293,10 @@ class snifferWorker(QObject):
                 self.updateTextZone.emit(f"player {instance[1:]} left")
                 self.mapManager.delteEntity(int(instance[1:]))
                         
+                        
     def run(self):
         filterStr = " or ".join([f"src host {ip}" for ip in TARGET_IP])
-        sniff(filter=filterStr, prn=self.updateWindowFeedText, store=0)
+        try:
+            sniff(filter=filterStr, prn=self.updateWindowFeedText, store=0)
+        except Exception as e:
+            print(f"sniffer error {e}")
